@@ -1,228 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spaces - SnakeEngine.ai (Courses)</title>
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#10B981">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spaces — Courses | SnakeEngine.ai</title>
+
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide icons (svg) -->
+  <script src="https://unpkg.com/lucide@latest/dist/lucide.min.js"></script>
+
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f9fafb;
-    }
-
-    .neon-glow {
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.35), 0 0 12px rgba(59, 130, 246, 0.25);
-      transition: .2s;
-    }
-
-    .card {
-      transition: transform .22s, box-shadow .22s;
-      border: 1px solid #eef2f7;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
-    }
-
-    .locked {
-      filter: grayscale(.12) contrast(.95);
-    }
-
-    .tag-free {
-      background: #ecfdf5;
-      color: #065f46;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-    }
-
-    .tag-paid {
-      background: #fffbeb;
-      color: #92400e;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-    }
-
-    .modal-backdrop {
-      background: rgba(0, 0, 0, 0.6);
-    }
-
-    @media (max-width: 768px) {
-      .nav-item {
-        width: 100%;
-        text-align: center;
-      }
-
-      .nav-item span {
-        font-size: 0.875rem;
-      }
-
-      #coursesGrid {
-        grid-template-columns: 1fr;
-      }
-
-      .modal-content {
-        max-width: 90%;
-      }
-    }
+    /* Small readable overrides to keep things tidy */
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    .card-transition { transition: transform .18s, box-shadow .18s; }
+    .card-transition:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08); }
+    .locked { filter: grayscale(.08) contrast(.98); }
+    /* small utility to clamp text lines gracefully */
+    .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   </style>
 </head>
+<body class="bg-gray-50 text-gray-800 antialiased">
 
-<body class="text-gray-800 antialiased">
-  <div class="flex flex-col md:flex-row h-screen w-full">
-    <!-- Mobile Navigation Toggle -->
-    <button id="navToggle" aria-label="Toggle navigation menu" class="md:hidden p-4 bg-white border-b border-gray-200">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-      </svg>
-    </button>
-    <!-- Navigation -->
-    <nav id="navMenu"
-      class="hidden md:flex flex-col items-center w-24 bg-white py-8 border-r border-gray-200 space-y-6">
-      <div id="nav-items" class="flex flex-col items-center space-y-8">
-        <a href="#" class="nav-item flex flex-col items-center p-3 rounded-lg w-20 active"><span
-            class="text-xs">Home</span></a>
-        <a href="#" class="nav-item flex flex-col items-center p-3 rounded-lg w-20"><span
-            class="text-xs">Discover</span></a>
-        <a href="#" class="nav-item flex flex-col items-center p-3 rounded-lg w-20"><span
-            class="text-xs">Spaces</span></a>
-        <a href="#" class="nav-item flex flex-col items-center p-3 rounded-lg w-20"><span
-            class="text-xs">Account</span></a>
-        <a href="#" class="nav-item flex flex-col items-center p-3 rounded-lg w-20"><span
-            class="text-xs">Login</span></a>
-      </div>
-    </nav>
+  <!-- Layout wrapper -->
+  <div class="min-h-screen flex">
 
-    <main class="flex-1 p-4 overflow-y-auto">
-      <div class="flex flex-col md:flex-row items-center justify-between mb-6">
-        <div class="flex items-center gap-3 mb-4 md:mb-0">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-green-400"></div>
-          <h1 class="text-2xl font-semibold">Spaces — Courses</h1>
-        </div>
-        <div>
-          <button id="refreshBtn" class="px-3 py-2 rounded-lg neon-glow bg-white border">Refresh</button>
-        </div>
+    <!-- SIDEBAR -->
+    <aside class="w-24 md:w-28 lg:w-32 bg-white border-r border-gray-200 flex flex-col items-center py-6 space-y-6">
+      <!-- Logo -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-400 shadow-inner"></div>
+        <span class="text-xs text-gray-600 hidden md:block">SnakeEngine</span>
       </div>
 
-      <div class="mb-4">
-        <p class="text-gray-600">Browse free and paid courses. Paid courses can be purchased via Razorpay (test) or UPI
-          wallet QR.</p>
-      </div>
+      <!-- Navigation (icons only, accessible labels) -->
+      <nav class="flex-1 flex flex-col items-center gap-4" aria-label="Main navigation">
+        <button id="navHome" class="nav-btn group p-2 rounded-lg hover:bg-gray-100 focus:outline-none" title="Home" aria-label="Home">
+          <i data-lucide="home" class="w-6 h-6 text-gray-700"></i>
+        </button>
 
-      <!-- FILTER TOGGLE & SEARCH -->
-      <div class="mb-6 flex flex-col md:flex-row gap-4 items-center">
-        <div class="flex gap-4">
-          <label class="flex items-center gap-2">
-            <input type="radio" name="courseType" value="all" checked class="form-radio h-4 w-4">
-            <span class="text-gray-700 font-medium">All</span>
-          </label>
-          <label class="flex items-center gap-2">
-            <input type="radio" name="courseType" value="free" class="form-radio h-4 w-4">
-            <span class="text-green-700 font-medium">Free</span>
-          </label>
-          <label class="flex items-center gap-2">
-            <input type="radio" name="courseType" value="paid" class="form-radio h-4 w-4">
-            <span class="text-yellow-700 font-medium">Paid</span>
-          </label>
-        </div>
-        <div class="ml-auto md:ml-0 mt-4 md:mt-0 w-full md:w-auto">
-          <input id="searchInput" placeholder="Search courses..." aria-label="Search courses"
-            class="px-3 py-2 border rounded-lg w-full" />
-        </div>
-      </div>
+        <button id="navDiscover" class="nav-btn group p-2 rounded-lg hover:bg-gray-100 focus:outline-none" title="Discover" aria-label="Discover">
+          <i data-lucide="compass" class="w-6 h-6 text-gray-700"></i>
+        </button>
 
-      <!-- Courses Grid -->
-      <section id="coursesGrid" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"></section>
+        <button id="navSpaces" class="nav-btn group p-2 rounded-lg hover:bg-gray-100 focus:outline-none" title="Spaces" aria-label="Spaces">
+          <i data-lucide="book-open" class="w-6 h-6 text-gray-700"></i>
+        </button>
+
+        <button id="navAccount" class="nav-btn group p-2 rounded-lg hover:bg-gray-100 focus:outline-none" title="Account" aria-label="Account">
+          <i data-lucide="user" class="w-6 h-6 text-gray-700"></i>
+        </button>
+
+        <button id="navLogin" class="nav-btn group p-2 rounded-lg hover:bg-gray-100 focus:outline-none" title="Login" aria-label="Login">
+          <i data-lucide="log-in" class="w-6 h-6 text-gray-700"></i>
+        </button>
+      </nav>
+
+      <!-- Footer small controls -->
+      <div class="w-full px-2">
+        <button id="refreshBtn" class="w-full text-xs px-3 py-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 neon-glow">
+          Refresh
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <!-- Header -->
+      <header class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-green-400 shadow"></div>
+          <div>
+            <h1 class="text-2xl md:text-3xl font-semibold">Spaces — Courses</h1>
+            <p class="text-sm text-gray-600 mt-0.5">Browse free and paid courses. (Razorpay / UPI placeholders included)</p>
+          </div>
+        </div>
+
+        <!-- Filter + Search -->
+        <div class="flex items-center gap-4 w-full md:w-auto">
+          <div class="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="courseType" value="all" checked class="form-radio h-4 w-4">
+              <span class="text-sm text-gray-700">All</span>
+            </label>
+            <label class="flex items-center gap-2 ml-3 cursor-pointer">
+              <input type="radio" name="courseType" value="free" class="form-radio h-4 w-4">
+              <span class="text-sm text-green-700 font-medium">Free</span>
+            </label>
+            <label class="flex items-center gap-2 ml-3 cursor-pointer">
+              <input type="radio" name="courseType" value="paid" class="form-radio h-4 w-4">
+              <span class="text-sm text-yellow-700 font-medium">Paid</span>
+            </label>
+          </div>
+
+          <div class="relative w-full md:w-80">
+            <input id="searchInput" type="search" placeholder="Search courses..." aria-label="Search courses"
+              class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200" />
+            <div class="absolute right-3 top-1/2 -translate-y-1/2">
+              <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Intro text -->
+      <p class="text-sm text-gray-600 mb-6">Tip: Paid courses show a "Buy" button. After you integrate your Razorpay server-side keys, replace the frontend placeholder with your server checkout token flow.</p>
+
+      <!-- Grid -->
+      <section id="coursesGrid" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <!-- cards injected by JS -->
+      </section>
+
+      <!-- Empty / loading placeholders (will be replaced) -->
+      <div id="emptyPlaceholder" class="hidden text-center text-gray-500 mt-8">
+        Loading courses...
+      </div>
     </main>
   </div>
 
-  <!-- Video Modal -->
-  <div id="videoModal" class="fixed inset-0 hidden items-center justify-center z-50">
-    <div class="modal-backdrop absolute inset-0"></div>
+  <!-- VIDEO MODAL -->
+  <div id="videoModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
     <div class="relative bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl z-10">
       <div class="flex items-center justify-between p-3 border-b">
         <h3 id="videoTitle" class="text-lg font-semibold"></h3>
-        <button id="closeVideo" aria-label="Close video modal" class="text-xl px-3">&times;</button>
+        <button id="closeVideo" aria-label="Close video" class="text-xl px-3">&times;</button>
       </div>
       <div id="videoFrame" class="aspect-video p-4"></div>
     </div>
   </div>
 
-  <!-- Payment Modal -->
-  <div id="payModal" class="fixed inset-0 hidden items-center justify-center z-50">
-    <div class="modal-backdrop absolute inset-0"></div>
+  <!-- PAYMENT MODAL -->
+  <div id="payModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
     <div class="relative bg-white rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl z-10 p-6">
       <div class="flex items-center justify-between mb-3">
         <h3 id="payTitle" class="text-lg font-semibold">Buy Course</h3>
         <button id="closePay" aria-label="Close payment modal" class="text-xl px-3">&times;</button>
       </div>
+
       <div class="mb-4">
         <p id="payDesc" class="text-gray-700"></p>
         <p class="mt-3"><span class="font-semibold">Amount: </span><span id="payAmount"></span></p>
       </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <button id="razorpayBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg">Pay with Razorpay</button>
+        <button id="razorpayBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg">Pay with Razorpay</button>
         <button id="upiBtn" class="px-4 py-2 bg-amber-400 text-black rounded-lg">Pay via UPI / Wallet</button>
       </div>
+
       <div id="upiPanel" class="mt-4 hidden">
-        <p class="text-sm text-gray-600">Scan this QR in any UPI app or use the UPI ID below:</p>
+        <p class="text-sm text-gray-600">Scan QR or use the UPI ID below:</p>
         <div class="flex flex-col md:flex-row gap-4 items-center mt-3">
-          <img id="upiQr" src="" alt="UPI QR Code" class="w-40 h-40 bg-white border rounded-md" loading="lazy" />
+          <img id="upiQr" src="" alt="UPI QR" class="w-40 h-40 bg-white border rounded-md" loading="lazy" />
           <div>
             <p class="font-medium" id="upiIdText">upiid@bank</p>
             <button id="paidConfirmBtn" class="mt-3 px-4 py-2 bg-blue-600 text-white rounded">I paid — Unlock</button>
-            <p id="upiInfo" class="text-xs text-gray-500 mt-2">After paying via UPI, click "I paid" to confirm
-              (frontend-only method).</p>
+            <p id="upiInfo" class="text-xs text-gray-500 mt-2">This is a frontend-only confirm button (no server verification).</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Razorpay checkout -->
+  <!-- Razorpay script placeholder (kept) -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <script>
-    /* ---------------- CONFIG - replace these ---------------- */
-    const RAZORPAY_KEY = 'rzp_test_YOUR_ACTUAL_KEY'; // Replace with actual Razorpay test key
-    const RECEIVER_UPI_ID = 'your-real-upi@bank'; // Replace with actual UPI ID
+    // ---------------- CONFIG (replace later with your real keys) ----------------
+    const RAZORPAY_KEY = 'rzp_test_YOUR_ACTUAL_KEY'; // Replace with your test/live key when ready
+    const RECEIVER_UPI_ID = 'your-real-upi@bank';     // Replace with your UPI ID
     const STORAGE_KEY = 'snakeengine_purchased_courses_v1';
-    /* ------------------------------------------------------ */
+    // ---------------------------------------------------------------------------
 
+    // Utility: Safe parse localStorage
+    function readPurchased() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (e) {
+        console.error('LocalStorage parse error', e);
+        return [];
+      }
+    }
     function savePurchased(id) {
       try {
-        const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        const arr = readPurchased();
         if (!arr.includes(id)) {
           arr.push(id);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
         }
-      } catch (e) {
-        console.error('Error saving purchased course:', e);
-      }
+      } catch (e) { console.error('Error saving purchased course:', e); }
     }
-
     function isPurchased(id) {
       try {
-        const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-        return arr.includes(id);
-      } catch (e) {
-        console.error('Error checking purchased course:', e);
-        return false;
-      }
+        return readPurchased().includes(id);
+      } catch (e) { return false; }
     }
 
+    // Keep state
+    let selectedCourseType = 'all'; // all / free / paid
+    let searchQuery = '';
+
+    // Convert YouTube url -> id (safe)
+    function extractVideoID(url) {
+      if (!url) return null;
+      const m = url.match(/(?:v=|youtu\.be\/|\/embed\/)([a-zA-Z0-9_-]{11})/);
+      return m ? m[1] : null;
+    }
+
+    // Fetch courses from main.json (path unchanged)
     async function fetchCoursesJSON() {
       try {
-        const res = await fetch('/main.json', { cache: "no-store" });
+        const res = await fetch('main.json', { cache: 'no-store' });
         if (!res.ok) throw new Error(`Failed to fetch main.json: ${res.status}`);
         const data = await res.json();
         return data.courses || [];
@@ -232,24 +221,105 @@
       }
     }
 
-    let selectedCourseType = 'all';
-    let searchQuery = '';
+    // Render functions
+    function createCourseCard(course) {
+      const locked = course.type === 'paid' && !isPurchased(course.id);
+      const article = document.createElement('article');
+      article.className = `bg-white rounded-2xl border border-gray-100 overflow-hidden card-transition flex flex-col justify-between ${locked ? 'locked' : ''}`;
 
-    function extractVideoID(url) {
-      if (!url) return 'dQw4w9WgXcQ'; // Fallback to a default video ID
-      const m = url.match(/(?:v=|youtu\.be\/|\/embed\/)([a-zA-Z0-9_-]{11})/);
-      return m ? m[1] : 'dQw4w9WgXcQ'; // Fallback if invalid
+      // Thumbnail (YouTube or placeholder)
+      const thumb = document.createElement('div');
+      thumb.className = 'w-full h-36 bg-gray-100 overflow-hidden';
+      const vidId = extractVideoID(course.youtube_url);
+      const img = document.createElement('img');
+      img.alt = (course.title || 'Course') + ' thumbnail';
+      img.loading = 'lazy';
+      img.className = 'w-full h-full object-cover';
+      img.src = vidId ? `https://img.youtube.com/vi/${vidId}/maxresdefault.jpg` : (course.thumbnail || 'https://picsum.photos/400/240?blur=3');
+      thumb.appendChild(img);
+
+      // Body
+      const body = document.createElement('div');
+      body.className = 'p-4 flex-1 flex flex-col';
+
+      const head = document.createElement('div');
+      head.className = 'flex items-start justify-between gap-3';
+
+      const title = document.createElement('h3');
+      title.className = 'text-lg font-semibold';
+      title.innerText = course.title || 'Untitled';
+
+      const tag = document.createElement('div');
+      tag.className = (course.type === 'free') ? 'text-sm px-2 py-1 rounded-full tag-free bg-emerald-50 text-emerald-700 font-semibold' : 'text-sm px-2 py-1 rounded-full tag-paid bg-yellow-50 text-yellow-800 font-semibold';
+      tag.innerText = course.type === 'free' ? 'Free' : 'Paid';
+
+      head.appendChild(title);
+      head.appendChild(tag);
+
+      const desc = document.createElement('p');
+      desc.className = 'text-sm text-gray-600 mt-3 line-clamp-3';
+      desc.innerText = course.description || 'No description available';
+
+      body.appendChild(head);
+      body.appendChild(desc);
+
+      // Footer controls
+      const footer = document.createElement('div');
+      footer.className = 'p-4 border-t border-gray-100 flex items-center justify-between gap-3';
+
+      const meta = document.createElement('div');
+      meta.className = 'text-sm text-gray-600';
+      meta.innerText = course.duration || 'N/A';
+
+      const actionWrap = document.createElement('div');
+      actionWrap.className = 'flex gap-2 items-center';
+
+      if (course.type === 'free') {
+        const startBtn = document.createElement('button');
+        startBtn.className = 'startBtn px-3 py-2 rounded-full bg-green-500 text-white text-sm hover:bg-green-600';
+        startBtn.setAttribute('data-id', course.id);
+        startBtn.innerText = 'Start';
+        actionWrap.appendChild(startBtn);
+      } else {
+        if (isPurchased(course.id)) {
+          const unlocked = document.createElement('div');
+          unlocked.className = 'px-3 py-2 rounded-full bg-gradient-to-r from-green-400 to-blue-500 text-white text-sm font-semibold';
+          unlocked.innerText = 'Unlocked';
+          actionWrap.appendChild(unlocked);
+        } else {
+          const buyBtn = document.createElement('button');
+          buyBtn.className = 'buyBtn px-3 py-2 rounded-full bg-yellow-400 text-black text-sm hover:bg-yellow-500';
+          buyBtn.setAttribute('data-id', course.id);
+          buyBtn.setAttribute('data-price', course.price || 0);
+          buyBtn.innerText = `Buy ₹${course.price || 0}`;
+          actionWrap.appendChild(buyBtn);
+        }
+      }
+
+      footer.appendChild(meta);
+      footer.appendChild(actionWrap);
+
+      article.appendChild(thumb);
+      article.appendChild(body);
+      article.appendChild(footer);
+
+      return article;
     }
 
+    // Load and display courses
     async function loadCourses() {
       const grid = document.getElementById('coursesGrid');
-      grid.innerHTML = `<div class="col-span-full text-center text-gray-500">Loading courses...</div>`;
+      const empty = document.getElementById('emptyPlaceholder');
+      grid.innerHTML = '';
+      empty.classList.remove('hidden');
+      empty.innerText = 'Loading courses...';
 
       const courses = await fetchCoursesJSON();
 
-      let filtered = courses.filter(c => {
+      // apply filters
+      let filtered = (courses || []).filter(c => {
         if (selectedCourseType === 'all') return true;
-        return c.type === selectedCourseType;
+        return (c.type === selectedCourseType);
       });
 
       if (searchQuery.trim()) {
@@ -261,38 +331,21 @@
         );
       }
 
-      if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center text-gray-500">No courses found.</div>`;
+      empty.classList.add('hidden');
+
+      if (!filtered.length) {
+        empty.classList.remove('hidden');
+        empty.innerText = 'No courses found.';
         return;
       }
 
-      grid.innerHTML = '';
+      // append cards
       filtered.forEach(course => {
-        const locked = course.type === 'paid' && !isPurchased(course.id);
-        const card = document.createElement('div');
-        card.className = `card bg-white rounded-2xl p-4 flex flex-col justify-between ${locked ? 'locked' : ''}`;
-        card.innerHTML = `
-        <div>
-          <div class="flex items-start justify-between">
-            <h3 class="text-lg font-semibold">${course.title || 'Untitled'}</h3>
-            <div class="${course.type === 'free' ? 'tag-free' : 'tag-paid'}">${course.type === 'free' ? 'Free' : 'Paid'}</div>
-          </div>
-          <p class="text-sm text-gray-600 mt-2 line-clamp-3">${course.description || 'No description available'}</p>
-          <img src="https://img.youtube.com/vi/${extractVideoID(course.youtube_url)}/maxresdefault.jpg" class="w-full h-36 object-cover rounded-xl mt-3" alt="${course.title} thumbnail" loading="lazy" />
-        </div>
-        <div class="mt-4 flex items-center justify-between">
-          <div class="text-sm text-gray-600">${course.duration || 'N/A'}</div>
-          <div class="flex gap-2">
-            ${course.type === 'free' ?
-            `<button data-id="${course.id}" class="startBtn px-3 py-2 rounded-full bg-green-500 text-white" aria-label="Start ${course.title} course">Start</button>` :
-            `${isPurchased(course.id) ? '<div class="px-3 py-2 rounded-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold">Unlocked</div>' : `<button data-id="${course.id}" data-amt="${course.price}" class="buyBtn px-3 py-2 rounded-full bg-yellow-400 text-black" aria-label="Buy ${course.title} course for ₹${course.price}">Buy ₹${course.price}</button>`}`
-          }
-          </div>
-        </div>
-      `;
+        const card = createCourseCard(course);
         grid.appendChild(card);
       });
 
+      // attach event listeners (delegation)
       document.querySelectorAll('.startBtn').forEach(btn => {
         btn.addEventListener('click', () => {
           const id = Number(btn.getAttribute('data-id'));
@@ -302,70 +355,119 @@
       document.querySelectorAll('.buyBtn').forEach(btn => {
         btn.addEventListener('click', () => {
           const id = Number(btn.getAttribute('data-id'));
-          const amount = Number(btn.getAttribute('data-amt'));
-          openPaymentModal(id, amount);
+          const price = Number(btn.getAttribute('data-price'));
+          openPaymentModal(id, price);
         });
       });
     }
 
+    // Helpers to get single course by id
     async function getCourseById(id) {
       const courses = await fetchCoursesJSON();
-      return courses.find(c => c.id === id);
+      return (courses || []).find(c => Number(c.id) === Number(id));
     }
 
+    // Open video modal
     async function openVideoById(id) {
       const course = await getCourseById(id);
       if (!course) return alert('Course not found');
       if (course.type === 'paid' && !isPurchased(course.id)) return alert('This is a paid course. Please buy to unlock.');
-      document.getElementById('videoTitle').innerText = course.title || 'Untitled';
+
+      const videoTitle = document.getElementById('videoTitle');
+      const videoFrame = document.getElementById('videoFrame');
+      videoTitle.innerText = course.title || 'Untitled';
       const vid = extractVideoID(course.youtube_url);
-      document.getElementById('videoFrame').innerHTML = `<iframe class="w-full h-96" src="https://www.youtube.com/embed/${vid}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="${course.title} video"></iframe>`;
-      document.getElementById('videoModal').classList.remove('hidden');
-      document.getElementById('videoModal').classList.add('flex');
+      if (vid) {
+        videoFrame.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${vid}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="${course.title} video"></iframe>`;
+      } else {
+        videoFrame.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-500">No video available.</div>`;
+      }
+
+      const modal = document.getElementById('videoModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
+    // Payment modal open
     let activePurchaseCourseId = null;
     async function openPaymentModal(courseId, amount) {
       activePurchaseCourseId = courseId;
       const course = await getCourseById(courseId);
       if (!course) return alert('Course not found');
+
       document.getElementById('payTitle').innerText = `Buy: ${course.title || 'Untitled'}`;
       document.getElementById('payDesc').innerText = course.description || 'No description available';
       document.getElementById('payAmount').innerText = `₹ ${amount}`;
+
       document.getElementById('upiPanel').classList.add('hidden');
-      document.getElementById('payModal').classList.remove('hidden');
-      document.getElementById('payModal').classList.add('flex');
+      const modal = document.getElementById('payModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
+    // DOM ready
     document.addEventListener('DOMContentLoaded', function () {
-      // Close video modal
-      document.getElementById('closeVideo').addEventListener('click', () => {
-        document.getElementById('videoFrame').innerHTML = '';
-        document.getElementById('videoModal').classList.add('hidden');
-        document.getElementById('videoModal').classList.remove('flex');
+      // Initialize lucide icons
+      if (window.lucide) window.lucide.createIcons();
+
+      // radio filter change
+      document.querySelectorAll('input[name="courseType"]').forEach(inp => {
+        inp.addEventListener('change', (e) => {
+          selectedCourseType = e.target.value;
+          loadCourses();
+        });
       });
 
-      // Close payment modal
-      document.getElementById('closePay').addEventListener('click', () => {
-        document.getElementById('payModal').classList.add('hidden');
-        document.getElementById('payModal').classList.remove('flex');
+      // Search
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        // small debounce
+        if (this._searchTimeout) clearTimeout(this._searchTimeout);
+        this._searchTimeout = setTimeout(() => loadCourses(), 220);
+      });
+
+      // Refresh button (sidebar)
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (refreshBtn) refreshBtn.addEventListener('click', () => loadCourses());
+
+      // Video modal close
+      const closeVideo = document.getElementById('closeVideo');
+      closeVideo.addEventListener('click', () => {
+        const modal = document.getElementById('videoModal');
+        document.getElementById('videoFrame').innerHTML = '';
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      });
+
+      // Payment modal close
+      const closePay = document.getElementById('closePay');
+      closePay.addEventListener('click', () => {
+        const modal = document.getElementById('payModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
         document.getElementById('upiPanel').classList.add('hidden');
         activePurchaseCourseId = null;
       });
 
-      // Razorpay payment
-      document.getElementById('razorpayBtn').addEventListener('click', async () => {
+      // Razorpay payment (frontend placeholder)
+      const razorpayBtn = document.getElementById('razorpayBtn');
+      razorpayBtn.addEventListener('click', async () => {
         if (!activePurchaseCourseId) return alert('No active course to buy.');
         const course = await getCourseById(activePurchaseCourseId);
         if (!course) return alert('Course not found');
-        const amount = course.price;
+        const amount = course.price || 0;
+
+        // NOTE: This is a frontend-only placeholder.
+        // Replace with server-side order creation and use the returned order_id in "options".
         const options = {
           key: RAZORPAY_KEY,
-          amount: Math.round(amount * 100),
+          amount: Math.round(Number(amount) * 100),
           currency: 'INR',
           name: 'SnakeEngine.ai',
           description: `Buy course: ${course.title}`,
           handler: function (response) {
+            // On success (handler gets payment id), mark purchased locally (you should verify server-side)
             savePurchased(activePurchaseCourseId);
             alert('Payment successful! Course unlocked.');
             document.getElementById('payModal').classList.add('hidden');
@@ -375,6 +477,7 @@
           prefill: { name: '', email: '', contact: '' },
           theme: { color: '#10B981' }
         };
+
         try {
           const rzp = new Razorpay(options);
           rzp.open();
@@ -384,15 +487,17 @@
         }
       });
 
-      // UPI payment
-      document.getElementById('upiBtn').addEventListener('click', async () => {
+      // UPI flow (frontend-only, generates QR)
+      const upiBtn = document.getElementById('upiBtn');
+      upiBtn.addEventListener('click', async () => {
         if (!activePurchaseCourseId) return alert('No active course to buy.');
         const course = await getCourseById(activePurchaseCourseId);
         if (!course) return alert('Course not found');
-        const amount = course.price;
+
+        const amount = course.price || 0;
         const pa = encodeURIComponent(RECEIVER_UPI_ID);
         const pn = encodeURIComponent('SnakeEngine');
-        const am = encodeURIComponent(amount.toFixed(2));
+        const am = encodeURIComponent(Number(amount).toFixed(2));
         const upiUri = `upi://pay?pa=${pa}&pn=${pn}&am=${am}&cu=INR&tn=Course%20Payment`;
         const qrUrl = `https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${encodeURIComponent(upiUri)}&choe=UTF-8`;
         document.getElementById('upiQr').src = qrUrl;
@@ -400,8 +505,9 @@
         document.getElementById('upiPanel').classList.remove('hidden');
       });
 
-      // UPI confirmation
-      document.getElementById('paidConfirmBtn').addEventListener('click', async () => {
+      // UPI confirm button (frontend only)
+      const paidConfirmBtn = document.getElementById('paidConfirmBtn');
+      paidConfirmBtn.addEventListener('click', () => {
         if (!activePurchaseCourseId) return;
         savePurchased(activePurchaseCourseId);
         alert('Payment confirmed. Course unlocked.');
@@ -412,38 +518,16 @@
         loadCourses();
       });
 
-      // Course type filter
-      document.querySelectorAll('input[name="courseType"]').forEach(inp => {
-        inp.addEventListener('change', (e) => {
-          selectedCourseType = e.target.value;
-          loadCourses();
-        });
+      // Sidebar nav click examples (highlighting can be added)
+      document.getElementById('navHome').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
 
-      // Search input
-      document.getElementById('searchInput').addEventListener('input', (e) => {
-        searchQuery = e.target.value;
-        loadCourses();
-      });
+      // Initial load
+      loadCourses();
 
-      // Refresh button
-      document.getElementById('refreshBtn').addEventListener('click', () => loadCourses());
+    }); // DOMContentLoaded end
 
-      // Mobile navigation toggle
-      document.getElementById('navToggle').addEventListener('click', () => {
-        const navMenu = document.getElementById('navMenu');
-        navMenu.classList.toggle('hidden');
-        const svg = document.querySelector('#navToggle svg path');
-        const d = svg.getAttribute('d');
-        svg.setAttribute('d', d.includes('M4 6h16') ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16m-7 6h7');
-      });
-
-      // Initialize
-      (async function init() {
-        await loadCourses();
-      })();
-    });
   </script>
 </body>
-
 </html>
