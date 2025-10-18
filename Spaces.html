@@ -222,7 +222,7 @@
 
     async function fetchCoursesJSON() {
       try {
-        const res = await fetch('main.json', { cache: "no-store" });
+        const res = await fetch('/main.json', { cache: "no-store" });
         if (!res.ok) throw new Error(`Failed to fetch main.json: ${res.status}`);
         const data = await res.json();
         return data.courses || [];
